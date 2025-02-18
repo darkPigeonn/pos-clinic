@@ -5,26 +5,16 @@
       <form @submit.prevent="handleLogin" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Email</label>
-          <input
-            v-model="email"
-            type="email"
-            required
-            class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
+          <input v-model="email" type="email" required
+            class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Password</label>
-          <input
-            v-model="password"
-            type="password"
-            required
-            class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
+          <input v-model="password" type="password" required
+            class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
         </div>
-        <button
-          type="submit"
-          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
+        <button type="submit"
+          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
           Sign in
         </button>
         <div class="text-center text-sm text-gray-600">
@@ -45,15 +35,20 @@ const router = useRouter()
 const email = ref('')
 const password = ref('')
 
+import { useLoading } from "~/composables/useLoading"
+const { show, hide } = useLoading()
 const handleLogin = async () => {
+  show()
   try {
     const { error } = await client.auth.signInWithPassword({
       email: email.value,
       password: password.value
     })
+    hide()
     if (error) throw error
     router.push('/')
   } catch (error) {
+    hide()
     console.error('Error:', error.message)
   }
 }

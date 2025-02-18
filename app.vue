@@ -1,6 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-100">
     <NuxtLoadingIndicator />
+    <Loading />
     <div v-if="!user">
       <NuxtPage />
     </div>
