@@ -8,35 +8,35 @@
           @click="startShift"
           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
         >
-          Start Shift
+          Mulai Shift
         </button>
         <button
           v-else
           @click="showEndShiftModal = true"
           class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
         >
-          End Shift
+          Akhiri Shift
         </button>
       </div>
     </div>
 
     <div class="bg-white rounded-lg shadow mb-6" v-if="activeShift">
       <div class="p-6">
-        <h2 class="text-xl font-bold mb-4">Active Shift</h2>
+        <h2 class="text-xl font-bold mb-4">Shift Aktif</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <p class="text-sm text-gray-600">Started</p>
+            <p class="text-sm text-gray-600">Dibuat</p>
             <p class="text-lg font-semibold">
               {{ new Date(activeShift.start_time).toLocaleString() }}
             </p>
           </div>
           <div>
-            <p class="text-sm text-gray-600">Cash Start</p>
-            <p class="text-lg font-semibold">₱{{ activeShift.cash_start.toFixed(2) }}</p>
+            <p class="text-sm text-gray-600">Saldo Awal</p>
+            <p class="text-lg font-semibold">{{ $formatRupiah(activeShift.cash_start) }}</p>
           </div>
           <div>
-            <p class="text-sm text-gray-600">Sales</p>
-            <p class="text-lg font-semibold">₱{{ currentShiftSales.toFixed(2) }}</p>
+            <p class="text-sm text-gray-600">Penjualan</p>
+            <p class="text-lg font-semibold">{{ $formatRupiah(currentShiftSales) }}</p>
           </div>
         </div>
       </div>
@@ -50,11 +50,11 @@
         <table class="w-full">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Start Time</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">End Time</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cash Start</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cash End</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Sales</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jam Mulai</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jam Selesai</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saldo Awal</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saldo Akhir</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Penjualan</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
             </tr>
           </thead>
@@ -64,11 +64,11 @@
               <td class="px-6 py-4">
                 {{ shift.end_time ? new Date(shift.end_time).toLocaleString() : '-' }}
               </td>
-              <td class="px-6 py-4">₱{{ shift.cash_start.toFixed(2) }}</td>
+              <td class="px-6 py-4">{{ $formatRupiah(shift.cash_start) }}</td>
               <td class="px-6 py-4">
-                {{ shift.cash_end ? `₱${shift.cash_end.toFixed(2)}` : '-' }}
+                {{ shift.cash_end ? $formatRupiah(shift.cash_end) : '-' }}
               </td>
-              <td class="px-6 py-4">₱{{ shiftSales[shift.id]?.toFixed(2) || '0.00' }}</td>
+              <td class="px-6 py-4">{{ $formatRupiah(shiftSales[shift.id]) }}</td>
               <td class="px-6 py-4 capitalize">
                 <span
                   :class="{
@@ -89,11 +89,11 @@
     <!-- End Shift Modal -->
     <div v-if="showEndShiftModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 class="text-xl font-bold mb-4">End Shift</h2>
+        <h2 class="text-xl font-bold mb-4">Akhiri Shift</h2>
         <form @submit.prevent="endShift">
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Cash End</label>
+              <label class="block text-sm font-medium text-gray-700">Saldo Akhir</label>
               <input
                 v-model.number="endShiftForm.cash_end"
                 type="number"
@@ -103,10 +103,10 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Notes</label>
+              <label class="block text-sm font-medium text-gray-700">Catatan</label>
               <textarea
                 v-model="endShiftForm.notes"
-                class="mt-1 block w-full rounded-lg border-gray-300"
+                class="mt-1 p-2 block w-full rounded-lg border-gray-300"
                 rows="3"
               ></textarea>
             </div>

@@ -1,23 +1,23 @@
 <template>
   <div class="bg-white w-64 h-screen shadow-lg">
     <div class="p-4 border-b">
-      <h1 class="text-xl font-bold">Clinic POS</h1>
+      <h1 class="text-xl font-bold">Karunia Jaya Medika</h1>
     </div>
     <nav class="p-4">
       <NuxtLink to="/" class="block py-2 px-4 rounded hover:bg-gray-100">
         Dashboard
       </NuxtLink>
       <NuxtLink to="/pos" class="block py-2 px-4 rounded hover:bg-gray-100">
-        Point of Sale
+        Kasir
       </NuxtLink>
       <NuxtLink to="/inventory" class="block py-2 px-4 rounded hover:bg-gray-100">
-        Inventory
+        Stok Barang
       </NuxtLink>
       <NuxtLink to="/shifts" class="block py-2 px-4 rounded hover:bg-gray-100">
-        Shifts
+        Shift
       </NuxtLink>
       <NuxtLink to="/reports" class="block py-2 px-4 rounded hover:bg-gray-100">
-        Reports
+        Laporan
       </NuxtLink>
     </nav>
     <div class="absolute bottom-0 w-64 p-4 border-t">

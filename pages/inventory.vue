@@ -1,12 +1,12 @@
 <template>
   <div class="p-6">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Inventory</h1>
+      <h1 class="text-2xl font-bold">Stok Barang</h1>
       <button
         @click="showNewProductModal = true"
         class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
       >
-        Add New Item
+        Tambah Barang
       </button>
     </div>
 
@@ -16,16 +16,16 @@
           <input
             v-model="search"
             type="text"
-            placeholder="Search items..."
+            placeholder="Cari barang..."
             class="flex-1 rounded-lg border-gray-300"
           />
           <select
             v-model="filterType"
             class="rounded-lg border-gray-300"
           >
-            <option value="all">All</option>
-            <option value="product">Products</option>
-            <option value="service">Services</option>
+            <option value="all">Semua</option>
+            <option value="product">Barang</option>
+            <option value="service">Layanan</option>
           </select>
         </div>
       </div>
@@ -34,18 +34,18 @@
         <table class="w-full">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jenis</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stok</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
             <tr v-for="item in filteredItems" :key="item.id">
               <td class="px-6 py-4">{{ item.name }}</td>
               <td class="px-6 py-4 capitalize">{{ item.type }}</td>
-              <td class="px-6 py-4">₱{{ item.price.toFixed(2) }}</td>
+              <td class="px-6 py-4">{{ $formatRupiah(item.price) }}</td>
               <td class="px-6 py-4">
                 <span
                   v-if="item.type === 'product'"
@@ -65,6 +65,12 @@
                   class="text-blue-600 hover:text-blue-800 mr-4"
                 >
                   Edit
+                </button>
+                <button
+                  @click="deleteItem(item)"
+                  class="text-red-600 hover:text-red-800"
+                >
+                  Hapus
                 </button>
               </td>
             </tr>
@@ -87,28 +93,28 @@
                 v-model="itemForm.name"
                 type="text"
                 required
-                class="mt-1 block w-full rounded-lg border-gray-300"
+                class="mt-1 p-2 block w-full rounded-lg border-gray-300"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Type</label>
+              <label class="block text-sm font-medium text-gray-700">Jenis</label>
               <select
                 v-model="itemForm.type"
                 required
-                class="mt-1 block w-full rounded-lg border-gray-300"
+                class="mt-1 p-2 block w-full rounded-lg border-gray-300"
               >
-                <option value="product">Product</option>
-                <option value="service">Service</option>
+                <option value="product">Barang</option>
+                <option value="service">Layanan</option>
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Price</label>
+              <label class="block text-sm font-medium text-gray-700">Harga</label>
               <input
                 v-model.number="itemForm.price"
                 type="number"
                 step="0.01"
                 required
-                class="mt-1 block w-full rounded-lg border-gray-300"
+                class="mt-1 p-2 block w-full rounded-lg border-gray-300"
               />
             </div>
             <div v-if="itemForm.type === 'product'">
@@ -117,14 +123,14 @@
                 v-model.number="itemForm.stock"
                 type="number"
                 required
-                class="mt-1 block w-full rounded-lg border-gray-300"
+                class="mt-1 p-2 block w-full rounded-lg border-gray-300"
               />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Description</label>
               <textarea
                 v-model="itemForm.description"
-                class="mt-1 block w-full rounded-lg border-gray-300"
+                class="mt-1 p-2 block w-full rounded-lg border-gray-300"
                 rows="3"
               ></textarea>
             </div>
@@ -179,6 +185,9 @@ const fetchItems = async () => {
   const { data } = await client
     .from('products')
     .select('*')
+
+    console.log(data);
+    
   items.value = data || []
 }
 
@@ -187,6 +196,34 @@ const editItem = (item) => {
   itemForm.value = { ...item }
   showNewProductModal.value = true
 }
+
+const deleteItem = async (item) => {
+  if (!confirm('Apakah Anda yakin ingin menghapus item ini?')) return;
+
+  try {
+    console.log('Menghapus item dengan ID:', item.id);
+
+    const { data, error } = await client
+      .from('products')
+      .delete()
+      .eq('id', item.id);
+
+    if (error) {
+      console.error('Error deleting item:', error);
+      alert('Gagal menghapus item');
+      return;
+    }
+
+    console.log('Item berhasil dihapus:', data);
+    alert('Item berhasil dihapus');
+    
+    await fetchItems(); // Memperbarui daftar item
+  } catch (err) {
+    console.error('Terjadi kesalahan:', err);
+    alert('Terjadi kesalahan saat menghapus item');
+  }
+};
+
 
 const saveItem = async () => {
   try {

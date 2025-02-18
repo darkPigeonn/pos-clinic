@@ -1,5 +1,5 @@
 /*
-  # Initial Schema Setup for Clinic POS
+  # Initial Schema Setup for Karunia Jaya Medika
 
   1. New Tables
     - products

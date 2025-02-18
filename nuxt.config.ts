@@ -16,7 +16,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'Clinic POS',
+      title: 'Karunia Jaya Medika',
       meta: [
         { name: 'description', content: 'Clinic Point of Sale System' }
       ]

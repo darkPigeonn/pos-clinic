@@ -5,10 +5,10 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <!-- Date Range Selector -->
       <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-lg font-semibold mb-4">Date Range</h2>
+        <h2 class="text-lg font-semibold mb-4">Jangka Waktu</h2>
         <div class="flex gap-4">
           <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700">Start Date</label>
+            <label class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
             <input
               v-model="startDate"
               type="date"
@@ -16,7 +16,7 @@
             />
           </div>
           <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700">End Date</label>
+            <label class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
             <input
               v-model="endDate"
               type="date"
@@ -28,14 +28,14 @@
 
       <!-- Summary Stats -->
       <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-lg font-semibold mb-4">Summary</h2>
+        <h2 class="text-lg font-semibold mb-4">Rekapitulasi</h2>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <p class="text-sm text-gray-600">Total Sales</p>
-            <p class="text-2xl font-bold">₱{{ totalSales.toFixed(2) }}</p>
+            <p class="text-sm text-gray-600">Total Penjualan</p>
+            <p class="text-2xl font-bold">{{ $formatRupiah(totalSales) }}</p>
           </div>
           <div>
-            <p class="text-sm text-gray-600">Total Transactions</p>
+            <p class="text-sm text-gray-600">Total Transaksi</p>
             <p class="text-2xl font-bold">{{ totalTransactions }}</p>
           </div>
         </div>
@@ -45,7 +45,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <!-- Sales by Payment Method -->
       <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-lg font-semibold mb-4">Sales by Payment Method</h2>
+        <h2 class="text-lg font-semibold mb-4">Penjualan per Metode Pembayaran</h2>
         <div class="space-y-4">
           <div v-for="(amount, method) in salesByPaymentMethod" :key="method">
             <div class="flex justify-between items-center">
@@ -65,7 +65,7 @@
 
       <!-- Top Products -->
       <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-lg font-semibold mb-4">Top Products</h2>
+        <h2 class="text-lg font-semibold mb-4">Produk Teratas</h2>
         <div class="space-y-4">
           <div v-for="product in topProducts" :key="product.id">
             <div class="flex justify-between items-center">
@@ -88,15 +88,15 @@
     <!-- Sales History -->
     <div class="bg-white rounded-lg shadow">
       <div class="p-4 border-b">
-        <h2 class="text-lg font-semibold">Sales History</h2>
+        <h2 class="text-lg font-semibold">Riwayat Penjualan</h2>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment Method</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Metode Pembayaran</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
             </tr>
           </thead>

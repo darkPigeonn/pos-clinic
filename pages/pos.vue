@@ -1,13 +1,13 @@
 <template>
   <div class="p-6">
     <div v-if="!activeShift" class="text-center py-12">
-      <h2 class="text-2xl font-bold mb-4">No Active Shift</h2>
-      <p class="text-gray-600 mb-4">You need to start a shift before using the POS</p>
+      <h2 class="text-2xl font-bold mb-4">Tidak ada Shift Aktif</h2>
+      <p class="text-gray-600 mb-4">Anda perlu memulai shift sebelum menggunakan POS</p>
       <button
-        @click="startShift"
+        @click="showStartShiftModal = true"
         class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
       >
-        Start Shift
+        Mulai Shift
       </button>
     </div>
     <div v-else class="grid grid-cols-12 gap-6">
@@ -23,11 +23,11 @@
             />
             <select
               v-model="filterType"
-              class="rounded-lg border-gray-300"
+              class="rounded-lg border-gray-300 p-2"
             >
-              <option value="all">All</option>
-              <option value="product">Products</option>
-              <option value="service">Services</option>
+              <option value="all">Semua</option>
+              <option value="service">Layanan</option>
+              <option value="product">Barang</option>
             </select>
           </div>
           <div class="grid grid-cols-3 gap-4">
@@ -38,7 +38,7 @@
               class="bg-gray-50 p-4 rounded-lg cursor-pointer hover:bg-gray-100"
             >
               <h3 class="font-semibold">{{ product.name }}</h3>
-              <p class="text-gray-600">₱{{ product.price.toFixed(2) }}</p>
+              <p class="text-gray-600">{{$formatRupiah(product.price) }}</p>              
               <p v-if="product.type === 'product'" class="text-sm text-gray-500">
                 Stock: {{ product.stock }}
               </p>
@@ -50,7 +50,7 @@
       <!-- Cart Section -->
       <div class="col-span-4">
         <div class="bg-white rounded-lg shadow p-4">
-          <h2 class="text-xl font-bold mb-4">Current Sale</h2>
+          <h2 class="text-xl font-bold mb-4">Penjualan Saat Ini</h2>
           <div class="mb-4 max-h-96 overflow-y-auto">
             <div
               v-for="item in cart"
@@ -60,7 +60,7 @@
               <div>
                 <h4 class="font-semibold">{{ item.name }}</h4>
                 <p class="text-sm text-gray-600">
-                  ₱{{ item.price.toFixed(2) }} x {{ item.quantity }}
+                  {{ $formatRupiah(item.price) }} x {{ item.quantity }}
                 </p>
               </div>
               <div class="flex items-center gap-2">
@@ -83,31 +83,60 @@
           <div class="border-t pt-4">
             <div class="flex justify-between mb-4">
               <span class="font-bold">Total:</span>
-              <span class="font-bold">₱{{ total.toFixed(2) }}</span>
+              <span class="font-bold">{{ $formatRupiah(total) }}</span>
             </div>
             <select
               v-model="paymentMethod"
-              class="w-full mb-4 rounded-lg border-gray-300"
+              class="w-full mb-4 rounded-lg border-gray-300 p-2"
             >
-              <option value="cash">Cash</option>
-              <option value="card">Card</option>
-              <option value="gcash">GCash</option>
+              <option value="cash">Tunai</option>
+              <!-- <option value="card">Card</option>
+              <option value="gcash">GCash</option> -->
             </select>
             <button
               @click="processSale"
               :disabled="cart.length === 0"
               class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
             >
-              Process Sale
+              Proses Penjualan
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- End Shift Modal -->
+    <div v-if="showStartShiftModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div class="bg-white rounded-lg shadow p-4">
+        <h2 class="text-xl font-bold mb-4">Mulai Shift</h2>
+        <form @submit.prevent="startShift">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Saldo Awal</label>
+              <input
+                v-model.number="startShiftForm.cash_start"
+                type="number"
+                step="0.01"
+                required
+                class="mt-1 p-2 block w-full rounded-lg border-gray-300"
+              />
+            </div>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              Mulai Shift
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import formatRupiah from '~/plugins/formatRupiah'
+
 const client = useSupabaseClient()
 const user = useSupabaseUser()
 
@@ -117,6 +146,10 @@ const cart = ref([])
 const search = ref('')
 const filterType = ref('all')
 const paymentMethod = ref('cash')
+const showStartShiftModal = ref(false)
+const startShiftForm = ref({
+  cash_start: 0,
+})
 
 const total = computed(() => {
   return cart.value.reduce((sum, item) => sum + (item.price * item.quantity), 0)
@@ -153,7 +186,7 @@ const startShift = async () => {
     .from('shifts')
     .insert({
       user_id: user.value.id,
-      cash_start: 0,
+      cash_start: startShiftForm.value.cash_start,
       status: 'active'
     })
     .select()
