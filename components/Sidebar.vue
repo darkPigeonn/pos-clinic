@@ -1,36 +1,56 @@
 <template>
-  <div class="bg-white w-64 h-screen shadow-lg">
-    <div class="p-4 border-b">
-      <h1 class="text-xl font-bold">Karunia Jaya Medika</h1>
+  <div class="flex">
+    <!-- Burger Button for Mobile -->
+    <button @click="toggleSidebar" class="md:hidden fixed top-4 left-4 z-50 p-2 bg-white shadow-lg rounded-md">
+      <span v-if="!isOpen">&#9776;</span>
+      <span v-else>&times;</span>
+    </button>
+    
+    <!-- Sidebar -->
+    <div :class="['bg-white h-screen shadow-lg fixed transition-all duration-300', isOpen ? 'w-64' : 'w-0 md:w-16', 'overflow-hidden md:overflow-visible']">
+      <div class="p-4 border-b flex items-center justify-between">
+        <h1 v-if="isOpen" class="text-xl font-bold md:block hidden">Karunia Jaya Medika</h1>
+      </div>
+      <nav class="p-4">
+        <NuxtLink to="/" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">          
+          <span v-if="isOpen" class="ml-2 md:inline-block">Dashboard</span>
+        </NuxtLink>
+        <NuxtLink to="/pos" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
+          
+          <span v-if="isOpen" class="ml-2 md:inline-block">Kasir</span>
+        </NuxtLink>
+        <NuxtLink to="/inventory" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
+          <span v-if="isOpen" class="ml-2 md:inline-block">Stok Barang</span>
+        </NuxtLink>
+        <NuxtLink to="/shifts" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
+          <span v-if="isOpen" class="ml-2 md:inline-block">Shift</span>
+        </NuxtLink>
+        <NuxtLink to="/reports" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
+          <span v-if="isOpen" class="ml-2 md:inline-block">Laporan</span>
+        </NuxtLink>
+      </nav>
+      <div class="absolute bottom-0 w-full p-4 border-t">
+        <button @click="handleLogout" class="w-full flex items-center py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600">
+          <span v-if="isOpen" class="ml-2 md:inline-block">Keluar</span>
+        </button>
+      </div>
     </div>
-    <nav class="p-4">
-      <NuxtLink to="/" class="block py-2 px-4 rounded hover:bg-gray-100">
-        Dashboard
-      </NuxtLink>
-      <NuxtLink to="/pos" class="block py-2 px-4 rounded hover:bg-gray-100">
-        Kasir
-      </NuxtLink>
-      <NuxtLink to="/inventory" class="block py-2 px-4 rounded hover:bg-gray-100">
-        Stok Barang
-      </NuxtLink>
-      <NuxtLink to="/shifts" class="block py-2 px-4 rounded hover:bg-gray-100">
-        Shift
-      </NuxtLink>
-      <NuxtLink to="/reports" class="block py-2 px-4 rounded hover:bg-gray-100">
-        Laporan
-      </NuxtLink>
-    </nav>
-    <div class="absolute bottom-0 w-64 p-4 border-t">
-      <button @click="handleLogout" class="w-full py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600">
-        Logout
-      </button>
+    <!-- Content Area -->
+    <div :class="['flex-1 transition-all duration-300', isOpen ? 'ml-64' : 'ml-0 md:ml-16']">
+      <slot />
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 const client = useSupabaseClient()
 const router = useRouter()
+const isOpen = ref(false)
+
+const toggleSidebar = () => {
+  isOpen.value = !isOpen.value
+}
 
 const handleLogout = async () => {
   await client.auth.signOut()

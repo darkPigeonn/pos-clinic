@@ -10,9 +10,9 @@
         Mulai Shift
       </button>
     </div>
-    <div v-else class="grid grid-cols-12 gap-6">
+    <div v-else class="grid md:grid-cols-12 grid-cols-6 gap-6">
       <!-- Products Section -->
-      <div class="col-span-8">
+      <div class="md:col-span-8 col-span-6">
         <div class="bg-white rounded-lg shadow p-4 mb-6">
           <div class="flex gap-4 mb-4">
             <input
@@ -30,7 +30,7 @@
               <option value="product">Barang</option>
             </select>
           </div>
-          <div class="grid grid-cols-3 gap-4">
+          <div class="grid md:grid-cols-3 grid-cols-2 gap-4">
             <div
               v-for="product in filteredProducts"
               :key="product.id"
@@ -47,8 +47,8 @@
         </div>
       </div>
 
-      <!-- Cart Section -->
-      <div class="col-span-4">
+      <!-- Cart Section Desktop -->
+      <div class="md:block hidden md:col-span-4 col-span-6">
         <div class="bg-white rounded-lg shadow p-4">
           <h2 class="text-xl font-bold mb-4">Penjualan Saat Ini</h2>
           <div class="mb-4 max-h-96 overflow-y-auto">
@@ -103,6 +103,33 @@
           </div>
         </div>
       </div>
+
+      <!-- Cart Section Mobile -->
+      <div class="md:hidden fixed bottom-0 left-0 w-full z-50">
+        <div class="flex justify-end">
+          <button
+          @click="showCartModal = !showCartModal"
+          class="my-2 p-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+        >
+          {{showCartModal ? 'X' : cart.length > 0 ? `${cart.length}` : '0' }}
+        </button>
+        </div>
+        <div class="bg-white rounded-t-lg shadow-lg p-4">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xl font-bold mr-4">Total Penjualan</h2>
+            <p class="text-2xl font-bold">{{ $formatRupiah(total) }}</p>
+          </div>
+          <button
+              @click="processSale"
+              :disabled="cart.length === 0"
+              class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 mb-2"
+            >
+              Proses Penjualan
+            </button>
+        </div>
+      
+      </div>
+
     </div>
 
     <!-- End Shift Modal -->
@@ -131,12 +158,27 @@
         </form>
       </div>
     </div>
+
+    <!-- Cart Modal -->
+    <div v-if="showCartModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div class="bg-white rounded-lg shadow p-4">        
+        <h2 class="text-xl font-bold mb-4">Keranjang Belanja</h2>
+        <div v-for="item in cart" :key="item.id">
+          <div class="items-center py-2 border-b">
+            <h4 class="font-semibold">{{ item.name }}</h4>
+            <p class="text-sm text-gray-600">
+              {{ $formatRupiah(item.price) }} x {{ item.quantity }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import formatRupiah from '~/plugins/formatRupiah'
-
+const {show, hide} = useLoading()
 const client = useSupabaseClient()
 const user = useSupabaseUser()
 
@@ -147,6 +189,7 @@ const search = ref('')
 const filterType = ref('all')
 const paymentMethod = ref('cash')
 const showStartShiftModal = ref(false)
+const showCartModal = ref(false)
 const startShiftForm = ref({
   cash_start: 0,
 })
@@ -198,6 +241,7 @@ const startShift = async () => {
 }
 
 const addToCart = (product) => {
+
   const existingItem = cart.value.find(item => item.id === product.id)
   if (existingItem) {
     updateQuantity(existingItem, 1)
@@ -223,6 +267,7 @@ const updateQuantity = (item, change) => {
 }
 
 const processSale = async () => {
+  show()
   if (!activeShift.value) return
 
   try {
@@ -264,8 +309,12 @@ const processSale = async () => {
     paymentMethod.value = 'cash'
     
     // Refresh products
+    hide()
+    alert('Penjualan berhasil')
+
     await fetchProducts()
   } catch (error) {
+    hide()
     console.error('Error processing sale:', error)
     alert('Error processing sale')
   }

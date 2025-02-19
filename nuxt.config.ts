@@ -5,7 +5,8 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/supabase',
     '@pinia/nuxt',
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
+  
   ],
   supabase: {
     redirectOptions: {
@@ -14,6 +15,7 @@ export default defineNuxtConfig({
       exclude: ['/', '/auth/register'],
     }
   },
+  
   app: {
     head: {
       title: 'Karunia Jaya Medika',
