@@ -234,8 +234,9 @@ const startShift = async () => {
     })
     .select()
     .single()
-  
-  if (!error) {
+    
+    if (!error) {
+    showStartShiftModal.value = false
     activeShift.value = data
   }
 }
