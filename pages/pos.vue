@@ -248,6 +248,10 @@ const fetchActiveShift = async () => {
 
 const startShift = async () => {
   isLoading.value = true
+  if(activeShift.value){
+    alert('Shift sudah aktif')
+    return
+  }
   // const { data, error } = await client
   //   .from('shifts')
   //   .insert({

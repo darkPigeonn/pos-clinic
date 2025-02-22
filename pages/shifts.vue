@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6">
+  <div class="p-6" v-if="!loadingPage">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Shifts</h1>
       <div class="flex gap-4">
@@ -133,12 +133,20 @@
       </div>
     </div>
   </div>
+  <div v-else>
+    <div class="flex justify-center items-center h-screen">
+      <div class="w-10 h-10 border-t-2 border-b-2 border-gray-900 rounded-full animate-spin"></div>
+      <p class="text-gray-900">Loading...</p>
+
+    </div>
+  </div>
 </template>
 
 <script setup>
 const client = useSupabaseClient()
 const user = useSupabaseUser()
-
+const loadingPage = ref(true)
+const {show, hide} = useLoading()
 const shifts = ref([])
 const activeShift = ref(null)
 const shiftSales = ref({})
@@ -177,11 +185,13 @@ const fetchShifts = async () => {
       currentShiftSales.value = shiftSales.value[shift.id]
     }
   }
+  loadingPage.value = false
 }
 
 const startShift = async () => {
+  show()
+  await fetchShifts()
   if (activeShift.value) return
-
   try {
     const { data, error } = await client
       .from('shifts')
@@ -200,6 +210,7 @@ const startShift = async () => {
     console.error('Error starting shift:', error)
     alert('Error starting shift')
   }
+  hide()
 }
 
 const endShift = async () => {
