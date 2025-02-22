@@ -9,7 +9,7 @@
     <!-- Sidebar -->
     <div 
       :class="[
-        'bg-white h-screen shadow-lg  transition-all duration-300',
+        'bg-white h-screen shadow-lg ',
         isOpen ? 'w-64' : 'w-0 md:w-64',
         isOpen ? 'visible' : 'invisible md:visible'
       ]"
@@ -23,6 +23,9 @@
         </NuxtLink>
         <NuxtLink to="/pos" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
           <span class="ml-2 md:inline-block">Kasir</span>
+        </NuxtLink>
+        <NuxtLink to="/purchases" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
+          <span class="ml-2 md:inline-block">Pembelian</span>
         </NuxtLink>
         <NuxtLink to="/inventory" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
           <span class="ml-2 md:inline-block">Stok Barang</span>
@@ -57,6 +60,13 @@ const isOpen = ref(false)
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value
 }
+
+onMounted(() => {
+  router.afterEach(() => {
+    isOpen.value = false
+  })
+})
+
 
 const handleLogout = async () => {
   await client.auth.signOut()

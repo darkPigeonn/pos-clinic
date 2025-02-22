@@ -93,14 +93,17 @@
         <form @submit.prevent="endShift">
           <div class="space-y-4">
             <div>
+              <label class="block text-sm font-medium text-gray-700">Saldo Awal</label>
+              <p class="text-lg font-semibold">{{ $formatRupiah(activeShift.cash_start) }}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Penjualan</label>
+              <p class="text-lg font-semibold">{{ $formatRupiah(currentShiftSales) }}</p>
+            </div>
+            
+            <div>
               <label class="block text-sm font-medium text-gray-700">Saldo Akhir</label>
-              <input
-                v-model.number="endShiftForm.cash_end"
-                type="number"
-                step="0.01"
-                required
-                class="mt-1 block w-full rounded-lg border-gray-300"
-              />
+              <p class="text-lg font-semibold">{{ $formatRupiah(endShiftForm.cash_end) }}</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Catatan</label>
@@ -157,6 +160,9 @@ const fetchShifts = async () => {
   
   // Find active shift
   activeShift.value = shifts.value.find(shift => shift.status === 'active')
+  if(activeShift.value){
+    endShiftForm.value.cash_end = activeShift.value.cash_start + currentShiftSales.value
+  }
   
   // Fetch sales for each shift
   for (const shift of shifts.value) {
@@ -222,6 +228,8 @@ const endShift = async () => {
     alert('Error ending shift')
   }
 }
+
+
 
 onMounted(fetchShifts)
 </script>

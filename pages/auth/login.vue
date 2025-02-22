@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
-      <h2 class="text-2xl font-bold text-center mb-6">Login to Karunia Jaya Medika</h2>
+    <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8 m-5">
+      <h2 class="text-2xl font-bold text-center mb-6">Karunia Jaya Medika</h2>
       <form @submit.prevent="handleLogin" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Email</label>
@@ -15,10 +15,11 @@
         </div>
         <button type="submit"
           class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-          Sign in
+          Masuk
         </button>
+       
         <div class="text-center text-sm text-gray-600">
-          Don't have an account?
+          Tidak punya akun?
           <NuxtLink to="/auth/register" class="text-blue-600 hover:text-blue-500">
             Register
           </NuxtLink>
@@ -49,7 +50,8 @@ const handleLogin = async () => {
     router.push('/')
   } catch (error) {
     hide()
-    console.error('Error:', error.message)
+    alert(error.message)
+    console.error('Kombinasi email atau password salah')
   }
 }
 </script>

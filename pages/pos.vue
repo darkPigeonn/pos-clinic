@@ -18,7 +18,7 @@
             <input
               v-model="search"
               type="text"
-              placeholder="Search products..."
+              placeholder="Cari layanan atau barang..."
               class="flex-1 rounded-lg border-gray-300"
             />
             <select
@@ -148,12 +148,7 @@
                 class="mt-1 p-2 block w-full rounded-lg border-gray-300"
               />
             </div>
-            <button
-              type="submit"
-              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-            >
-              Mulai Shift
-            </button>
+            <BaseButton :label="'Mulai Shift'" :class="'bg-blue-600 text-white'" :loading="isLoading" />
           </div>
         </form>
       </div>
@@ -163,13 +158,38 @@
     <div v-if="showCartModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div class="bg-white rounded-lg shadow p-4">        
         <h2 class="text-xl font-bold mb-4">Keranjang Belanja</h2>
-        <div v-for="item in cart" :key="item.id">
-          <div class="items-center py-2 border-b">
-            <h4 class="font-semibold">{{ item.name }}</h4>
-            <p class="text-sm text-gray-600">
-              {{ $formatRupiah(item.price) }} x {{ item.quantity }}
-            </p>
+        <div class="bg-white rounded-lg shadow p-4">
+        
+          <div class="mb-4 max-h-96 overflow-y-auto">
+            <div
+              v-for="item in cart"
+              :key="item.id"
+              class="flex justify-between items-center py-2 border-b"
+            >
+              <div>
+                <h4 class="font-semibold">{{ item.name }}</h4>
+                <p class="text-sm text-gray-600">
+                  {{ $formatRupiah(item.price) }} x {{ item.quantity }}
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  @click="updateQuantity(item, -1)"
+                  class="px-2 py-1 bg-gray-100 rounded"
+                >
+                  -
+                </button>
+                <span>{{ item.quantity }}</span>
+                <button
+                  @click="updateQuantity(item, 1)"
+                  class="px-2 py-1 bg-gray-100 rounded"
+                >
+                  +
+                </button>
+              </div>
+            </div>
           </div>
+      
         </div>
       </div>
     </div>
@@ -181,7 +201,7 @@ import formatRupiah from '~/plugins/formatRupiah'
 const {show, hide} = useLoading()
 const client = useSupabaseClient()
 const user = useSupabaseUser()
-
+const isLoading = ref(false)
 const activeShift = ref(null)
 const products = ref([])
 const cart = ref([])
@@ -215,6 +235,7 @@ const fetchProducts = async () => {
 }
 
 const fetchActiveShift = async () => {
+  show()
   const { data } = await client
     .from('shifts')
     .select('*')
@@ -222,23 +243,46 @@ const fetchActiveShift = async () => {
     .eq('status', 'active')
     .single()
   activeShift.value = data
+  hide()
 }
 
 const startShift = async () => {
-  const { data, error } = await client
+  isLoading.value = true
+  // const { data, error } = await client
+  //   .from('shifts')
+  //   .insert({
+  //     user_id: user.value.id,
+  //     cash_start: startShiftForm.value.cash_start,
+  //     status: 'active'
+  //   })
+  //   .select()
+  //   .single()
+    
+  //   if (!error) {
+  //   showStartShiftModal.value = false
+  //   activeShift.value = data
+  // }
+  try{
+    const { data, error } = await client
     .from('shifts')
     .insert({
       user_id: user.value.id,
       cash_start: startShiftForm.value.cash_start,
       status: 'active'
     })
-    .select()
+    .select() 
     .single()
-    
     if (!error) {
-    showStartShiftModal.value = false
-    activeShift.value = data
+      showStartShiftModal.value = false
+      activeShift.value = data
+      alert('Shift berhasil dimulai')
+    }
+  } catch (error) {
+    
+    console.error('Error starting shift:', error)
+    alert('Error starting shift')
   }
+  isLoading.value = false
 }
 
 const addToCart = (product) => {
