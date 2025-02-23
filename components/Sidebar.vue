@@ -70,7 +70,6 @@ const toggleSidebar = () => {
 onMounted(async () => {
 
   role.value = await useUserRole();
-  console.log(role.value);
   router.afterEach(() => {
     isOpen.value = false
   })

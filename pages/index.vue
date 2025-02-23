@@ -29,10 +29,7 @@ const lowStockCount = ref(0)
 
 onMounted(async () => {
   // Fetch today's sales
-  if (!user.value) {
-    router.push('/login') // Redirect ke halaman login jika user tidak ada
-    return
-  }
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   
