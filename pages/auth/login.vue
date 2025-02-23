@@ -54,4 +54,10 @@ const handleLogin = async () => {
     console.error('Kombinasi email atau password salah')
   }
 }
+onMounted(() => {
+  const user = client.auth.getUser()
+  if (user) {
+    router.push('/')
+  }
+})
 </script>
