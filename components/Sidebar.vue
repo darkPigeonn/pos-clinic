@@ -36,6 +36,9 @@
         <NuxtLink to="/reports" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
           <span class="ml-2 md:inline-block">Laporan</span>
         </NuxtLink>
+        <NuxtLink v-if="role === 'admin'" to="/partners" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
+          <span class="ml-2 md:inline-block">Klinik</span>
+        </NuxtLink>
       </nav>
       <div class="absolute bottom-0 p-4 border-t">
         <button @click.prevent="handleLogout" class="w-full flex items-center py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600">
@@ -57,11 +60,17 @@ const client = useSupabaseClient()
 const router = useRouter()
 const isOpen = ref(false)
 
+import { useUserRole } from '~/composables/useUserRole';
+const role = ref('guest');
+
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value
 }
 
-onMounted(() => {
+onMounted(async () => {
+
+  role.value = await useUserRole();
+  console.log(role.value);
   router.afterEach(() => {
     isOpen.value = false
   })
