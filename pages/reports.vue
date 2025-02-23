@@ -50,7 +50,7 @@
           <div v-for="(amount, method) in salesByPaymentMethod" :key="method">
             <div class="flex justify-between items-center">
               <span class="capitalize">{{ method }}</span>
-              <span class="font-semibold">₱{{ amount.toFixed(2) }}</span>
+              <span class="font-semibold">{{ $formatRupiah(amount) }}</span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-2">
               <div
@@ -109,7 +109,7 @@
                 </div>
               </td>
               <td class="px-6 py-4 capitalize">{{ sale.payment_method }}</td>
-              <td class="px-6 py-4">₱{{ sale.total_amount.toFixed(2) }}</td>
+              <td class="px-6 py-4">{{ $formatRupiah(sale.total_amount) }}</td>
             </tr>
           </tbody>
         </table>
@@ -149,6 +149,7 @@ const fetchReportData = async () => {
       .order('created_at', { ascending: false })
 
     if (!sales) return
+    console.log(sales)
 
     // Process sales data
     totalTransactions.value = sales.length
