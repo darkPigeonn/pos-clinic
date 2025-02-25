@@ -30,7 +30,7 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Alamat</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Telp</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+       
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pemilik Klinik</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nomor Klinik</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal Kontrak</th>
@@ -44,12 +44,12 @@
                 <td class="px-6 py-4">{{ item.name }}</td>
                 <td class="px-6 py-4">{{ item.address }}</td>
                 <td class="px-6 py-4">{{ item.phone }}</td>
-                <td class="px-6 py-4">{{ item.email }}</td>
+              
                 <td class="px-6 py-4">{{ item.owner_name }}</td>
                 <td class="px-6 py-4">{{ item.license_number }}</td>
                 <td class="px-6 py-4">{{ item.contract_date }}</td>
-                <td class="px-6 py-4">{{ item.contract_range }}</td>
-                <td class="px-6 py-4">{{ sisaKontrak(item.contract_date, item.contract_range) }}</td>
+                <td class="px-6 py-4">{{ sisaKontrak(item.contract_date, item.contract_range).tanggalAkhir }}</td>
+                <td class="px-6 py-4">{{ sisaKontrak(item.contract_date, item.contract_range).sisaKontrak }}</td>
                
                 <td class="px-6 py-4">
                   <button
@@ -194,21 +194,50 @@
   })
 
   const sisaKontrak = function(date1, date2) {
-    const currentDate = new Date()
-    const contractDate = new Date(date1)
-    const contractRange = parseInt(date2)
-    const contractDatePlusRange = new Date(contractDate.getTime() + contractRange * 30 * 24 * 60 * 60 * 1000)
-    
-    const diffTime = Math.abs(currentDate - contractDatePlusRange)
-  
-    
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-    const diffYears = Math.floor(diffDays / 365)
-    const diffMonths = Math.floor((diffDays % 365) / 30)
+    const currentDate = new Date();
+    const contractDate = new Date(date1);
+    const contractRange = parseInt(date2);
 
-    return `${diffYears} tahun, ${diffMonths} bulan`
-  }
-  
+    // Hitung tanggal akhir kontrak
+    const contractEndDate = new Date(contractDate);
+    contractEndDate.setFullYear(contractDate.getFullYear() + contractRange);
+
+    // Format tanggal akhir kontrak ke "YYYY-MM-DD"
+    const formattedContractEndDate = contractEndDate.toISOString().split('T')[0];
+
+    // Jika kontrak sudah berakhir
+    if (currentDate > contractEndDate) {
+        return {
+            sisaKontrak: "Kontrak sudah berakhir",
+            tanggalAkhir: formattedContractEndDate
+        };
+    }
+
+    // Hitung selisih waktu dalam tahun, bulan, hari
+    let years = contractEndDate.getFullYear() - currentDate.getFullYear();
+    let months = contractEndDate.getMonth() - currentDate.getMonth();
+    let days = contractEndDate.getDate() - currentDate.getDate();
+
+    // Jika hari negatif, pinjam dari bulan sebelumnya
+    if (days < 0) {
+        const lastMonth = new Date(contractEndDate.getFullYear(), contractEndDate.getMonth(), 0);
+        days += lastMonth.getDate();
+        months--;
+    }
+
+    // Jika bulan negatif, pinjam dari tahun sebelumnya
+    if (months < 0) {
+        months += 12;
+        years--;
+    }
+
+    return {
+        sisaKontrak: `${years} tahun, ${months} bulan, ${days} hari`,
+        tanggalAkhir: formattedContractEndDate
+    };
+}
+
+
   const filteredItems = computed(() => {
     return items.value
       .filter(item => {
