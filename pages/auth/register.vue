@@ -4,6 +4,15 @@
       <h2 class="text-2xl font-bold text-center mb-6">Register for Karunia Jaya Medika</h2>
       <form @submit.prevent="handleRegister" class="space-y-4">
         <div>
+          <label class="block text-sm font-medium text-gray-700">Nama</label>
+          <input
+            v-model="fullName"
+            type="text"
+            required
+            class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          />
+        </div>
+        <div>
           <label class="block text-sm font-medium text-gray-700">Email</label>
           <input
             v-model="email"
@@ -29,7 +38,7 @@
               aria-label="Toggle password visibility"
             >
               <span class="sm:text-sm">
-                {{ showPassword ? 'Hide' : 'Show' }}
+                {{ showPassword ? 'Tutup' : 'Lihat' }}
               </span>
             </button>
           </div>
@@ -41,7 +50,7 @@
           Register
         </button>
         <div class="text-center text-sm text-gray-600">
-          Already have an account?
+          Sudah punya akun?
           <NuxtLink to="/auth/login" class="text-blue-600 hover:text-blue-500">
             Sign in
           </NuxtLink>
@@ -52,14 +61,17 @@
 </template>
 
 <script setup>
+const {show, hide} = useLoading()
 const client = useSupabaseClient()
 const router = useRouter()
 
 const email = ref('')
 const password = ref('')
+const fullName = ref('')
 const showPassword = ref(false)
 
 const handleRegister = async () => {
+  show()
   try {
     const { data, error } = await client.auth.signUp({
       email: email.value,
@@ -68,8 +80,20 @@ const handleRegister = async () => {
     if (error) throw error
 
     // Registration successful, redirect to login
-    router.push('/auth/login')
+    const user = useSupabaseUser()
+    console.log(user.value)
+    const {data: userData} = await client.from('users').insert({
+      id: user.value.id,
+      name: fullName.value,
+      email: email.value,
+      role: 'user',
+      auth_id: user.value.id,
+    })
+    hide()
+    alert('Register berhasil')
+    router.push('/')
   } catch (error) {
+    hide()
     console.error('Error:', error.message)
   }
 }
