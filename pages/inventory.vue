@@ -182,11 +182,14 @@ const filteredItems = computed(() => {
 })
 
 const fetchItems = async () => {
+  const user = await client.auth.getUser()
+  const {data: dataUser} = await client.from('users').select('*').eq('auth_id', user.data.user.id).single()
+ 
   const { data } = await client
     .from('products')
     .select('*')
+    .eq('partner_id', dataUser.partner_id)
 
-    console.log(data);
     
   items.value = data || []
 }
