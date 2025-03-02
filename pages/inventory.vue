@@ -185,13 +185,21 @@ const fetchItems = async () => {
   const user = await client.auth.getUser()
   const {data: dataUser} = await client.from('users').select('*').eq('auth_id', user.data.user.id).single()
  
-  const { data } = await client
-    .from('products')
-    .select('*')
-    .eq('partner_id', dataUser.partner_id)
-
-    
-  items.value = data || []
+  if(dataUser.role === 'admin'){
+    const { data } = await client
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      items.value = data || []
+  }else{
+    const { data } = await client
+      .from('products')
+      .select('*')
+      .eq('partner_id', dataUser.partner_id)
+      .order('created_at', { ascending: false })
+      items.value = data || []
+  }
+ 
 }
 
 const editItem = (item) => {
