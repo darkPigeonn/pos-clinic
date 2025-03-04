@@ -27,6 +27,9 @@
         <NuxtLink to="/purchases" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
           <span class="ml-2 md:inline-block">Pembelian</span>
         </NuxtLink>
+        <NuxtLink to="/purchasesList" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
+          <span class="ml-2 md:inline-block">Daftar Pembelian</span>
+        </NuxtLink>
         <NuxtLink to="/inventory" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
           <span class="ml-2 md:inline-block">Stok Barang</span>
         </NuxtLink>
