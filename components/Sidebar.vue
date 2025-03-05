@@ -42,6 +42,10 @@
         <NuxtLink v-if="role === 'admin'" to="/partners" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
           <span class="ml-2 md:inline-block">Klinik</span>
         </NuxtLink>
+        <NuxtLink v-if="role === 'admin'" to="/finance" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
+          <span class="ml-2 md:inline-block">Finance</span>
+        </NuxtLink>
+        
         <NuxtLink v-if="role === 'admin'" to="/users" class="flex items-center py-2 px-4 rounded hover:bg-gray-100">
           <span class="ml-2 md:inline-block">Pengguna</span>
         </NuxtLink>
