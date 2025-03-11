@@ -1,144 +1,62 @@
 <template>
     <div class="p-6">
       <h1 class="text-2xl font-bold mb-6">Reports</h1>
-  
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <!-- Date Range Selector -->
-        <div class="bg-white p-6 rounded-lg shadow">
-          <h2 class="text-lg font-semibold mb-4">Jangka Waktu</h2>
-          <div class="flex gap-4">
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
-              <input
-                v-model="startDate"
-                type="date"
-                class="mt-1 block w-full rounded-lg border-gray-300"
-              />
-            </div>
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
-              <input
-                v-model="endDate"
-                type="date"
-                class="mt-1 block w-full rounded-lg border-gray-300"
-              />
-            </div>
+      <button @click.prevent="processReport" class=" flex items-center py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">
+          <span class="ml-2 md:inline-block">Proses Laporan Bulan Ini</span>
+        </button>
+
+        <div class="mt-6 bg-white p-6 rounded-lg shadow">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Rekap Keuangan Bulan {{ new Date().toLocaleString('default', { month: 'long' }) }}</h2>
           </div>
-        </div>
-  
-        <!-- Summary Stats -->
-        <div class="bg-white p-6 rounded-lg shadow">
-          <h2 class="text-lg font-semibold mb-4">Rekapitulasi</h2>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-sm text-gray-600">Total Penjualan</p>
-              <p class="text-2xl font-bold">{{ $formatRupiah(totalSales) }}</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-600">Total Transaksi</p>
-              <p class="text-2xl font-bold">{{ totalTransactions }}</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-600">Total Profit</p>
-              <p class="text-2xl font-bold">{{ $formatRupiah(totalProfit) }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-  
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div class="bg-white p-6 rounded-lg shadow" v-if="role === 'admin'">
-          <h2 class="text-lg font-semibold mb-4">Penjualan per Klinik</h2>
-          <div class="space-y-4">
-            <div v-for="klinik in salesByKlinik" :key="klinik.id" class="flex flex-col">
-              <span class="text-sm text-gray-600 mb-2">{{ klinik.name }}</span>
-              <div class="flex justify-between items-center">
-                <span class="font-semibold">{{ $formatRupiah(klinik.totalAmount) }} / {{ $formatRupiah(klinik.totalProfit) }}</span>
-                <span class="font-semibold">{{ klinik.totalTransactions }} transaksi</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      
-        <!-- Top Products -->
-        <div class="bg-white p-6 rounded-lg shadow">
-          <h2 class="text-lg font-semibold mb-4">Produk Teratas</h2>
-          <div class="space-y-4">
-            <div v-for="product in topProducts" :key="product.id">
-              <div class="flex justify-between items-center">
-                <span>{{ product.name }}</span>
-                <span class="font-semibold">{{ product.quantity }} units</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  class="bg-green-600 h-2 rounded-full"
-                  :style="{
-                    width: `${(product.quantity / topProducts[0].quantity) * 100}%`
-                  }"
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-  
-    
-  
-      <!-- Sales History -->
-      <div class="bg-white rounded-lg shadow">
-        <div class="p-4 border-b">
-          <h2 class="text-lg font-semibold">Riwayat Penjualan</h2>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-gray-50">
+          <table class="w-full border-collapse border border-gray-300">
+            <thead>
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Metode Pembayaran</th>
-                <th v-if="role === 'admin'" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Klinik</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Profit</th>
+                <th class="border border-gray-300 p-2">No</th>
+                <th class="border border-gray-300 p-2">Partner</th>
+                <th class="border border-gray-300 p-2">Total Penjualan</th>
+                <th class="border border-gray-300 p-2">Total Precentase</th>
+                <th class="border border-gray-300 p-2">Profit</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr v-for="sale in salesHistory" :key="sale.id">
-                <td class="px-6 py-4">{{ new Date(sale.created_at).toLocaleString() }}</td>
-                <td class="px-6 py-4">
-                  <div v-for="item in sale.items" :key="item.id" class="text-sm">
-                    {{ item.quantity }}x {{ item.name }}
-                  </div>
-                </td>
-                <td class="px-6 py-4 capitalize">{{ sale.payment_method }}</td>
-                <td v-if="role === 'admin'" class="px-6 py-4 capitalize">{{ sale.partner_name }}</td>
-                <td class="px-6 py-4">{{ $formatRupiah(sale.total_amount) }}</td>
-                <td class="px-6 py-4">{{ $formatRupiah(sale.profit) }}</td>
+            <tbody>
+              <tr v-for="(partner, index) in salesByKlinik" :key="partner.partner_id">
+                <td class="border border-gray-300 p-2">{{ index + 1 }}</td>
+                <td class="border border-gray-300 p-2">{{ partner.partner_name }}</td>
+                <td class="border border-gray-300 p-2">{{  $formatRupiah(partner.totalPurchase) }}</td>
+                <td class="border border-gray-300 p-2">{{  $formatRupiah(partner.total) }}</td>
+                <td class="border border-gray-300 p-2">{{  $formatRupiah(partner.profit) }}</td>
+              </tr>
+              <tr v-if="rekap.totalPurchase > 0">
+                <td class="border border-gray-300 p-2" colspan="2">Total</td>
+         
+                <td class="border border-gray-300 p-2">{{  $formatRupiah(rekap.totalPurchase) }}</td>
+                <td class="border border-gray-300 p-2">{{  $formatRupiah(rekap.total) }}</td>
+                <td class="border border-gray-300 p-2">{{  $formatRupiah(rekap.profit) }}</td>
               </tr>
             </tbody>
+            
+
           </table>
         </div>
-      </div>
+    
     </div>
   </template>
   
   <script setup>
   const client = useSupabaseClient()
   
-  const startDate = ref(new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0])
-  const endDate = ref(new Date().toISOString().split('T')[0])
-  
-  const totalSales = ref(0)
-  const totalTransactions = ref(0)
-  const salesByPaymentMethod = ref({})
   const salesByKlinik = ref({})
-  const topProducts = ref([])
-  const salesHistory = ref([])
-  const totalProfit = ref(0)
-  
+  const rekap = ref({})
   import { useUserRole } from '~/composables/useUserRole';
   const role = ref('guest');
 
-  
+
+  const processReport = async () => {
+    console.log('Processing report...');
+    await fetchReportData();
+  }
+    
   const fetchReportData = async () => {
     try {
       // Fetch sales within date range
@@ -154,89 +72,86 @@
             )
           )
         `)
-        .gte('created_at', `${startDate.value}T00:00:00`)
-        .lte('created_at', `${endDate.value}T23:59:59`)
+        .gte('created_at', `${new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]}T00:00:00`)
+        .lte('created_at', `${new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0]}T23:59:59`)
         .order('created_at', { ascending: false })
-  
-        sales.forEach(sale => {
-            sale.hpp = sale.sale_items.reduce((sum, item) => sum + item.product.hpp * item.quantity, 0)
-            sale.laba = sale.total_amount - sale.hpp
-            if(sale.partner_id == 5){
-                console.log(sale);
-            }
-        })
+
+
         
+     
   
             //get partner name
       const { data: partners } = await client.from('partners').select('*')
-  
-      if (!sales) return
-      
-      // Process sales data
-      totalTransactions.value = sales.length
-      totalSales.value = sales.reduce((sum, sale) => sum + sale.total_amount, 0)
-  
-      // Calculate sales by payment method
-      salesByPaymentMethod.value = sales.reduce((acc, sale) => {
-        acc[sale.payment_method] = (acc[sale.payment_method] || 0) + sale.total_amount
-        return acc
-      }, {})
-  
-      // Calculate top products
-      const productQuantities = {}
-      sales.forEach(sale => {
-        sale.sale_items.forEach(item => {
-        
-          const productName = item.product.name
-          productQuantities[productName] = (productQuantities[productName] || 0) + item.quantity
-       
-        })
-      })
-     
-  
-      topProducts.value = Object.entries(productQuantities)
-        .map(([name, quantity]) => ({ name, quantity }))
-        .sort((a, b) => b.quantity - a.quantity)
-        .slice(0, 5)
-    //get total profit
-    totalProfit.value = sales.reduce((sum, sale) => sum + sale.laba * (partners.find(partner => partner.id === sale.partner_id)?.persentase ? partners.find(partner => partner.id === sale.partner_id).persentase / 100 : 0), 0)
-  
-      // Format sales history
-      salesHistory.value = sales.slice(0, 10).map(sale => ({
-        ...sale,
-        partner_name: partners.find(partner => partner.id === sale.partner_id)?.name,
-        items: sale.sale_items.map(item => ({
-          ...item,
-          name: item.product.name
-        })) ,
-        profit : sale.laba * (partners.find(partner => partner.id === sale.partner_id)?.persentase / 100)
-      }))
-  
-      // Calculate sales by klinik
-      salesByKlinik.value = sales.reduce((acc, sale) => {
-        acc[sale.partner_id] = (acc[sale.partner_id] || 0) + sale.total_amount
-        return acc
-      }, {})
-  
-      salesByKlinik.value = Object.entries(salesByKlinik.value).map(([partnerId, totalAmount]) => ({
-        partnerId,
-        totalAmount,
-        totalTransactions: sales.filter(sale => sale.partner_id === parseInt(partnerId)).length,
-        name: partners.find(partner => partner.id === parseInt(partnerId))?.name,
-        totalProfit: sales.filter(sale => sale.partner_id === parseInt(partnerId)).reduce((sum, sale) => sum + sale.laba * (partners.find(partner => partner.id === sale.partner_id)?.persentase ? partners.find(partner => partner.id === sale.partner_id).persentase / 100 : 0), 0)
-      }))
-      
+      const result = sales.reduce((acc, sale) => {
+    // Cek apakah partner_id sudah ada di accumulator
+    let partner = acc.find(p => p.partner_id === sale.partner_id);
+    
+    const precentase = partners.find(partner => partner.id === sale.partner_id)?.persentase ? partners.find(partner => partner.id === sale.partner_id).persentase / 100 : 0
+    const partnerName = partners.find(partner => partner.id === sale.partner_id)?.name
+    if (!partner) {
+        partner = {
+            partner_id: sale.partner_id,
+            sale_items: [],
+            precentase: precentase,
+            partner_name: partnerName
+        };
+        acc.push(partner);
+    }
+
+    sale.sale_items.forEach(item => {
+        let product = partner.sale_items.find(p => p.product_id === item.product_id);
+
+        if (!product) {
+            product = {
+                product_id: item.product_id,
+                product_name: item.product.name,
+                hpp: item.product.hpp,
+                total: 0,
+                totalPurchase: 0
+            };
+            partner.sale_items.push(product);
+        }
+
+        product.total += (item.price * item.quantity) * precentase;
+        product.totalPurchase += item.price * item.quantity;
+    });
+
+    return acc;
+  }, []);
+  let tempRekap = {
+    totalPurchase: 0,
+    total: 0,
+    profit: 0
+  };
+    result.forEach(partner => {
+      partner.profit = 0
+      partner.totalPurchase = 0
+      partner.total = 0
+      partner.sale_items.forEach(product => {
+        product.profit =  product.total - product.hpp;
+        if (product.profit < 0) product.profit = 0; // Pastikan tidak negatif
+        partner.profit += product.profit;
+        partner.totalPurchase += product.totalPurchase;
+        partner.total += product.total;
+      });
+      tempRekap.totalPurchase += partner.totalPurchase;
+      tempRekap.total += partner.total;
+      tempRekap.profit += partner.profit;
+    });
+
+    salesByKlinik.value = result;
+    rekap.value = tempRekap;
+    console.log(rekap);
+    
     } catch (error) {
       console.error('Error fetching report data:', error)
     }
   }
   
-  watch([startDate, endDate], fetchReportData)
   onMounted(async () => {
     role.value = await useUserRole();
     if (role.value!== 'admin') {
       navigateTo('/')
     }
-    fetchReportData();
   })
   </script>
