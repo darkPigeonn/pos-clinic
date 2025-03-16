@@ -5,6 +5,7 @@
       <p class="text-gray-600 mb-4">Anda perlu memulai shift sebelum menggunakan POS</p>
       <button
         @click="showStartShiftModal = true"
+        :disabled="isLoading"
         class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
       >
         Mulai Shift
@@ -198,6 +199,7 @@
 
 <script setup>
 import formatRupiah from '~/plugins/formatRupiah'
+import Swal from 'sweetalert2'
 const {show, hide} = useLoading()
 const client = useSupabaseClient()
 const user = useSupabaseUser()
@@ -253,6 +255,7 @@ const fetchActiveShift = async () => {
 
 const startShift = async () => {
   isLoading.value = true
+  await fetchActiveShift()
   if(activeShift.value){
     alert('Shift sudah aktif')
     return
@@ -364,7 +367,11 @@ const processSale = async () => {
     
     // Refresh products
     hide()
-    alert('Penjualan berhasil')
+    Swal.fire({
+      title: 'Success',
+      text: 'Penjualan berhasil',
+      icon: 'success'
+    })
 
     await fetchProducts()
   } catch (error) {
@@ -375,7 +382,9 @@ const processSale = async () => {
 }
 
 onMounted(async () => {
+  isLoading.value = true
   await fetchActiveShift()
   await fetchProducts()
+  isLoading.value = false
 })
 </script>

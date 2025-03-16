@@ -19,6 +19,7 @@
     "dayjs": "^1.11.10",
     "nuxt": "^3.13.0",
     "pinia": "^2.1.7",
+    "sweetalert2": "^11.17.2",
     "vue-toastification": "^2.0.0-rc.5"
   }
 }
