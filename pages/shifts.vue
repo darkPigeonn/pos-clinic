@@ -3,15 +3,9 @@
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Shifts</h1>
       <div class="flex gap-4">
+
         <button
-          v-if="!activeShift"
-          @click="startShift"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          Mulai Shift
-        </button>
-        <button
-          v-else
+          v-if="activeShift"
           @click="showEndShiftModal = true"
           class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
         >

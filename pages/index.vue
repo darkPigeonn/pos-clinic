@@ -8,7 +8,7 @@
       </div>
       <div class="bg-white p-6 rounded-lg shadow">
         <h3 class="text-lg font-semibold mb-2">Shift Aktif</h3>
-        <p v-if="activeShift" class="text-3xl font-bold">Rp {{ activeShift.cash_start.toFixed(2) }}</p>
+        <p v-if="activeShift" class="text-3xl font-bold">{{ activeShift }} Klinik</p>
         <p v-else class="text-gray-500">Tidak ada shift aktif</p>
       </div>
       <div class="bg-white p-6 rounded-lg shadow">
@@ -26,12 +26,15 @@ const router = useRouter()
 const todaySales = ref(0)
 const activeShift = ref(null)
 const lowStockCount = ref(0)
+import { useUserRole } from '~/composables/useUserRole';
 
 onMounted(async () => {
   // Fetch today's sales
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
+
+  const thisRole = await useUserRole();
   
   const { data: salesData } = await client
     .from('sales')
@@ -41,14 +44,22 @@ onMounted(async () => {
   todaySales.value = salesData?.reduce((sum, sale) => sum + sale.total_amount, 0) || 0
 
   // Fetch active shift
-  const { data: shiftData } = await client
+  let { data: shiftData } = await client
     .from('shifts')
     .select('*')
     .eq('user_id', user.value.id)
     .eq('status', 'active')
     .single()
+
+  if (thisRole === 'admin') {
+    const { data: allShiftData } = await client
+      .from('shifts')
+      .select('*')
+      .eq('status', 'active')
+    shiftData = allShiftData;
+  } 
   
-  activeShift.value = shiftData
+  activeShift.value = shiftData.length > 0 ? shiftData.length : 0
 
   // Fetch low stock items (less than 10 items)
   const { data: stockData } = await client
