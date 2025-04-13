@@ -158,6 +158,7 @@
 
 <script setup>
 const client = useSupabaseClient()
+const thisUser = await useUser();
 
 const items = ref([])
 const search = ref('')
@@ -189,6 +190,7 @@ const fetchItems = async () => {
     const { data } = await client
       .from('products')
       .select('*')
+      .eq("ownercode", thisUser.ownerCode)
       .order('created_at', { ascending: false })
       items.value = data || []
   }else{

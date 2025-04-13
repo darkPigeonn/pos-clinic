@@ -176,6 +176,7 @@
   
   <script setup>
   const client = useSupabaseClient()
+  const thisUser = await useUser(); 
   
   const items = ref([])
   const search = ref('')
@@ -248,11 +249,13 @@
   })
   
   const fetchItems = async () => {
+   
+    
     const { data } = await client
       .from('partners')
       .select('*')
-  
-      console.log(data);
+      .eq('ownercode', thisUser.ownerCode)
+     
       
     items.value = data || []
   }
@@ -299,7 +302,7 @@
           .update(itemForm.value)
           .eq('id', editingItem.value.id)
       } else {
-       
+        itemForm.value.ownercode = thisUser.ownerCode
         const { data, error } = await client
           .from('partners')
           .insert(itemForm.value)

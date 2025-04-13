@@ -71,6 +71,7 @@
                   *
                 )
               `)
+              .eq('ownercode', thisUser.ownerCode)
       
         
         

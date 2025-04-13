@@ -116,7 +116,6 @@ const isLoading = ref(false)
     <div class="p-2">
         <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-bold mb-4">Form Pembelian</h2>
-          
             <div class="mt-4">
                 <h2 class="text-lg font-semibold mb-2">Daftar Produk</h2>
                 
@@ -158,7 +157,7 @@ const isLoading = ref(false)
                 <p v-else class="text-gray-500 text-sm italic">Belum ada produk ditambahkan.</p>
             </div>
         </div>
-        <div class="fixed bottom-0 left-0 w-full p-6 rounded-lg shadow">
+        <div class=" bottom-0 left-0 w-full p-6 rounded-lg shadow">
       
      
             <!-- Daftar Produk -->
