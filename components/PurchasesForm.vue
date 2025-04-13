@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 const client = useSupabaseClient()
 const user = useSupabaseUser()
 const purchase = ref({
@@ -104,6 +104,7 @@ if (itemsError) {
 isLoading.value = false
 
 }
+
 watch([() => itemsPurchase.value.quantity, () => itemsPurchase.value.price], () => {
   const subtotal = itemsPurchase.value.quantity * itemsPurchase.value.price; 
   itemsPurchase.value.subtotal = useFormatRupiah(subtotal.toString());
@@ -115,13 +116,10 @@ const isLoading = ref(false)
 <template>
     <div class="p-2">
         <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4">Form Pembelian</h2>
-          
+            <h2 class="text-xl font-bold mb-4">Form Pembelian</h2> 
             <div class="mt-4">
                 <h2 class="text-lg font-semibold mb-2">Daftar Produk</h2>
-                
                 <div v-if="purchase.products.length > 0" class="border rounded-lg p-2">
-                    
                     <!-- Desktop View -->
                     <div class="hidden md:grid grid-cols-5 font-semibold text-gray-700 border-b pb-2">
                     <div>Nama Produk</div>
@@ -154,13 +152,10 @@ const isLoading = ref(false)
                     </div>
                     </div>
                 </div>
-
                 <p v-else class="text-gray-500 text-sm italic">Belum ada produk ditambahkan.</p>
             </div>
         </div>
-        <div class="fixed bottom-0 left-0 w-full p-6 rounded-lg shadow">
-      
-     
+        <div class="bottom-0 left-0 w-full p-6 rounded-lg shadow">
             <!-- Daftar Produk -->
             <div v-if="formPurchase" class="bg-white p-6 rounded-lg shadow">
                 <form @submit.prevent="addProduct">
@@ -188,7 +183,6 @@ const isLoading = ref(false)
                 </form>            
             </div>
             <button type="button" @click="formPurchase = !formPurchase " class="text-sm items-center float-right px-4 py-2 mt-2 bg-blue-500 text-white rounded hover:bg-green-600">{{ formPurchase ? '✕' : '+' }}</button>
-      
             <!-- Total -->
             <div class="mt-2 bg-white p-6 rounded-lg shadow w-full">
               <label class="block text-sm font-medium">Total</label>
@@ -198,8 +192,6 @@ const isLoading = ref(false)
                 {{ isLoading ? 'Memproses...' : 'Simpan Pembelian' }}
               </button>
             </div>
-      
-         
         </div>
     </div>
 </template>
