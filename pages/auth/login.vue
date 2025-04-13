@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8 m-5">
-      <h2 class="text-2xl font-bold text-center mb-6">Karunia Jaya Medika</h2>
+      <h2 class="text-2xl font-bold text-center mb-6">KATHA POS</h2>
       <form @submit.prevent="handleLogin" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Email</label>
