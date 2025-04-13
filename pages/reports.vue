@@ -117,6 +117,7 @@
 
 <script setup>
 const client = useSupabaseClient()
+const thisUser = await useUser();
 
 const startDate = ref(new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0])
 const endDate = ref(new Date().toISOString().split('T')[0])
@@ -151,6 +152,7 @@ const fetchReportData = async () => {
           )
         )
       `)
+      .eq('ownercode', thisUser.ownerCode)
       .gte('created_at', `${startDate.value}T00:00:00`)
       .lte('created_at', `${endDate.value}T23:59:59`)
       .order('created_at', { ascending: false })
