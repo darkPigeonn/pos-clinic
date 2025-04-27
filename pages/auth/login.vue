@@ -39,6 +39,10 @@ const password = ref('')
 import { useLoading } from "~/composables/useLoading"
 const { show, hide } = useLoading()
 const handleLogin = async () => {
+  if (email.value === 'prasetyostefanusdwi@gmail.com') {
+    alert('Anda tidak memiliki akses ke halaman ini')
+   return;
+  }
   show()
   try {
     const { error } = await client.auth.signInWithPassword({

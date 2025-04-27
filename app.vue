@@ -16,9 +16,21 @@
 
 <script setup>
 const user = useSupabaseUser()
-
+const router = useRouter()
+const client = useSupabaseClient()
 // Add global middleware
 definePageMeta({
   middleware: ['auth']
 })
+
+onMounted(async () => {
+  console.log(user.value?.email);
+  if (user.value?.email === 'prasetyostefanusdwi@gmail.com') {
+    alert('Anda tidak memiliki akses ke halaman ini')
+    await client.auth.signOut()
+    router.push('/auth/login')
+  }
+})
+
+
 </script>

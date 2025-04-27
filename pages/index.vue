@@ -29,6 +29,13 @@ const lowStockCount = ref(0)
 import { useUserRole } from '~/composables/useUserRole';
 
 onMounted(async () => {
+  console.log(user.value?.email);
+  if (user.value?.email === 'prasetyostefanusdwi@gmail.com') {
+    alert('Anda tidak memiliki akses ke halaman ini')
+    await client.auth.signOut()
+    router.push('/auth/login')
+  }
+
   // Fetch today's sales
 
   const today = new Date()
@@ -69,5 +76,9 @@ onMounted(async () => {
     .lt('stock', 10)
   
   lowStockCount.value = stockData?.length || 0
+
+
+
+
 })
 </script>
